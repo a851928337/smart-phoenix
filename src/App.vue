@@ -5,6 +5,8 @@
 </template>
 
 <style lang="less">
+@import './app.less';
+
 body {
   margin: 0;
   padding: 0;

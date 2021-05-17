@@ -24,7 +24,7 @@
           tag="div"
           v-for="item in list"
           :key="item.id"
-          class="item"
+          class="item tap-transform"
           :to="{ path: `/record/submit/${item.id}` }"
         >
           <div class="row1">
@@ -42,7 +42,6 @@
               </div>
               <div class="address">{{ item.address }}</div>
             </div>
-            <i class="iconfont icon-you" />
           </div>
         </router-link>
       </pull-refresh-list>
