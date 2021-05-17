@@ -1,19 +1,26 @@
 <template>
-  <div class="condition">
+  <div ref="container" class="condition">
     <div class="container">
       <div
         class="item"
         v-for="(item, index) in conditionList"
         :key="index"
         :data-type="item.type"
-        @click="onClickTab"
+        @click="onShow"
       >
         {{ condition[item.type].label || item.label }}
         <i class="iconfont icon-xia" />
       </div>
     </div>
-    <div class="mask" v-show="type" @click="type = ''"></div>
-    <div :class="['select-menu', { active: type }]">
+    <div
+      :class="['mask', { active: show }]"
+      :style="{ height: `${parentHeight}px` }"
+      @click="onHide"
+    ></div>
+    <div
+      :class="['select-menu', { active: show }]"
+      :style="{ '--maxHeight': `${height}px` }"
+    >
       <div class="date-content" v-if="type === 'date'">
         <div class="year-list">
           <div
@@ -36,6 +43,20 @@
           </div>
         </div>
       </div>
+      <div class="search-content" v-else-if="type === 'no'">
+        <van-search v-model="search" shape="round" placeholder="请输入户号" />
+        <div class="list">
+          <div
+            :class="['item', { active: getIndex === index }]"
+            v-for="(item, index) in getList"
+            :key="index"
+            :data-index="index"
+            @click="setIndex"
+          >
+            {{ item.label }}
+          </div>
+        </div>
+      </div>
       <div class="content" v-else>
         <div
           :class="['item', { active: getIndex === index }]"
@@ -52,10 +73,14 @@
 </template>
 
 <script>
+import { use } from '@/assets/js/import-vant';
+use(['Search']);
 export default {
   name: 'record-condition',
   data() {
     return {
+      show: false,
+      search: '',
       conditionList: [
         { label: '时间', type: 'date' },
         { label: '户', type: 'no' },
@@ -75,23 +100,18 @@ export default {
       problemIndex: -1,
       processIndex: -1,
       unwatch: null,
+      height: 0,
+      parentHeight: 0,
     };
   },
   mounted() {
     this.initWatcher();
+    this.initParentHeight();
   },
   destroyed() {
     this.unwatch();
   },
   methods: {
-    onClickTab(e) {
-      const { type } = e.target.dataset;
-      this.type = type;
-    },
-    setIndex(e) {
-      const { index } = e.target.dataset;
-      this[`${this.type}Index`] = Number(index);
-    },
     initWatcher() {
       this.unwatch = this.$watch(
         function () {
@@ -121,9 +141,16 @@ export default {
             processIndex !== oldProblemIndex &&
             (this.condition.process = this.processList[processIndex]);
 
-          this.type = '';
+          this.onHide();
         }
       );
+    },
+    initParentHeight() {
+      const el = this.$refs.container;
+      const rect = el.getBoundingClientRect();
+      const parentRect = el.parentElement.getBoundingClientRect();
+      this.height = parentRect.height - rect.height;
+      this.parentHeight = parentRect.height;
     },
     setDateCondition(index) {
       const yearObj = this.$store.dateList[this.yearIndex];
@@ -134,6 +161,22 @@ export default {
         label: date,
         value: date,
       };
+    },
+    setIndex(e) {
+      const { index } = e.target.dataset;
+      this[`${this.type}Index`] = Number(index);
+    },
+    onShow(e) {
+      const { type } = e.target.dataset;
+      if (this.type === type && this.show) {
+        this.show = false;
+      } else {
+        this.type = type;
+        this.show = true;
+      }
+    },
+    onHide() {
+      this.show = false;
     },
   },
   computed: {
@@ -185,36 +228,42 @@ export default {
       }
       .icon-xia {
         margin-left: .px2vw(8) [ @vw];
-        font-size: 1vw;
+        font-size: .px2vw(20) [ @vw];
       }
     }
   }
-
+  @transition: all 0.2s linear;
   .mask {
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     width: 100vw;
-    height: 100vh;
     z-index: 1;
+    visibility: hidden;
+    opacity: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    transition: @transition;
+    &.active {
+      visibility: visible;
+      opacity: 1;
+    }
   }
   .select-menu {
-    @maxHeight: 60vh;
     width: 100%;
     position: absolute;
     z-index: 2;
     left: 0;
     top: 100%;
     overflow: hidden;
-    max-height: @maxHeight;
+    max-height: 0vh;
     background-color: #fff;
-    transition: all 0.2s linear;
+    transition: @transition;
     @offset: 4px;
     &.active {
-      box-shadow: 0 @offset @offset -4px rgba(0, 0, 0, 0.3);
-      max-height: @maxHeight;
+      max-height: var(--maxHeight);
     }
     .date-content,
+    .search-content,
     .content {
       .item {
         height: .px2vw(126) [ @vw];
@@ -230,7 +279,7 @@ export default {
       display: flex;
       .year-list,
       .month-list {
-        max-height: @maxHeight;
+        max-height: var(--maxHeight);
         overflow: auto;
         .item {
           display: flex;
@@ -260,13 +309,25 @@ export default {
         }
       }
     }
+    .search-content {
+      display: flex;
+      flex-flow: column;
+      & > * {
+        width: 100%;
+      }
+      .list {
+        flex: 1;
+        overflow: auto;
+      }
+    }
+    .search-content,
     .content {
-      max-height: @maxHeight;
+      max-height: var(--maxHeight);
       overflow: auto;
       .item {
         display: flex;
         align-items: center;
-        padding-left: .px2vw(117) [ @vw];
+        justify-content: center;
         &.active {
           color: @green;
         }

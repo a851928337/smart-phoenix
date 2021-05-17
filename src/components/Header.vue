@@ -1,5 +1,5 @@
 <template>
-  <div class="header">
+  <header class="header">
     <div class="container">
       <div class="left">
         <slot name="left">
@@ -18,7 +18,7 @@
       <div class="title">{{ $route.meta.title }}</div>
       <div class="right"></div>
     </div>
-  </div>
+  </header>
 </template>
 
 <script>
