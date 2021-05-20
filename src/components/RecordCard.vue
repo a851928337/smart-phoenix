@@ -12,7 +12,7 @@
           v-for="(_item, _index) in item.problem"
           :key="_index"
         >
-          {{ _item | problem }}
+          {{ problem(_item) }}
         </div>
         <div class="is-on-side">
           {{ item.isOnSide | isOnSide }}
@@ -24,7 +24,7 @@
     </div>
     <div class="row3">
       <div class="status" :style="{ color: getStatusColor(item.status) }">
-        {{ item.status | process }}
+        {{ process(item.status) }}
       </div>
       <div class="date">
         {{ item.date }}

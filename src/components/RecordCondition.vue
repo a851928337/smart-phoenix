@@ -8,7 +8,7 @@
         :data-type="item.type"
         @click="onShow"
       >
-        {{ condition[item.type].label || item.label }}
+        {{  item.label(condition[item.type].label) }}
         <i class="iconfont icon-xia" />
       </div>
     </div>

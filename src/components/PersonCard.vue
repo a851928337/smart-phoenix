@@ -1,5 +1,9 @@
 <template>
-  <div class="people-card">
+  <router-link
+    tag="div"
+    class="person-card"
+    :to="{ name: 'person-detail', params: { id: item.id } }"
+  >
     <div class="row1">
       <div class="name">{{ item.name }}</div>
       <i v-if="item.member" class="iconfont icon-xingxing" />
@@ -8,17 +12,17 @@
       <div class="row">
         <div class="left">
           <img src="~@/assets/image/shipment.png" />
-          {{ item.shipment | shipment }}
+          {{  shipment(item.shipment) }}
         </div>
         <div class="right">
           <img src="~@/assets/image/gender.png" />
-          {{ item.gender | gender }}
+          {{  gender(item.gender) }}
         </div>
       </div>
       <div class="row">
         <div class="left">
           <img src="~@/assets/image/education.png" />
-          {{ item.education | education }}
+          {{  education(item.education) }}
         </div>
         <div class="right">
           <img src="~@/assets/image/work.png" />
@@ -27,17 +31,17 @@
       </div>
       <div class="row">
         <span v-for="(item, index) in item.identity" :key="index">
-          {{ item | identity }}</span
+          {{  identity(item) }}</span
         >
       </div>
     </div>
-  </div>
+  </router-link>
 </template>
 
 <script>
 import { mixin } from '@/assets/mixin';
 export default {
-  name: 'people-card',
+  name: 'person-card',
   mixins: [mixin],
   props: {
     item: {
@@ -48,7 +52,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.people-card {
+.person-card {
   padding-left: .px2vw(40) [ @vw];
   border: 1px solid @green;
   border-radius: 0 0 20px 20px;

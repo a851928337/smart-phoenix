@@ -1,6 +1,6 @@
 <template>
-  <div class="record-submit-card">
-    <div class="card-title">
+  <div class="submit-card">
+    <div v-if="title" class="card-title">
       <div class="title">{{ title }}</div>
       <slot name="title-right"></slot>
     </div>
@@ -11,7 +11,7 @@
 
 <script>
 export default {
-  name: 'record-submit-card',
+  name: 'submit-card',
   props: {
     title: {
       default: '',
@@ -21,7 +21,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.record-submit-card {
+.submit-card {
   overflow: hidden;
   padding: 0;
   background-color: #fff;

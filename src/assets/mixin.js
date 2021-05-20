@@ -1,6 +1,9 @@
 import { store } from './store';
 export const mixin = {
-  filters: {
+  methods: {
+    px2vw(px) {
+      return (px / 750) * 100 + 'vw';
+    },
     problem(v) {
       return store.problemList.filter((item) => {
         return item.value === v;
@@ -45,10 +48,8 @@ export const mixin = {
         '学生',
       ][v];
     },
-  },
-  methods: {
-    px2vw(px) {
-      return (px / 750) * 100 + 'vw';
+    position(v) {
+      return ['工人'][v];
     },
   },
 };

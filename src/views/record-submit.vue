@@ -1,12 +1,12 @@
 <template>
   <div class="record-submit-page">
-    <record-submit-card title="户地址">
+    <submit-card title="户地址">
       <template #content>
         <div class="content address">淄博市临淄区凤凰镇什么村几组几号</div>
       </template>
-    </record-submit-card>
+    </submit-card>
 
-    <record-submit-card title="户成员" class="people">
+    <submit-card title="户成员" class="people">
       <template #title-right>
         <div
           :class="['collapse-btn', { active: showCollapse }]"
@@ -18,16 +18,16 @@
       </template>
       <template #content>
         <div v-show="showCollapse" class="people-list">
-          <people-card
+          <person-card
             v-for="(item, index) in peopleList"
             :key="index"
             :item="item"
           />
         </div>
       </template>
-    </record-submit-card>
+    </submit-card>
 
-    <record-submit-card title="户情况">
+    <submit-card title="户情况">
       <template #content>
         <div class="content">
           <cell
@@ -57,8 +57,8 @@
           />
         </div>
       </template>
-    </record-submit-card>
-    <record-submit-card title="走访信息">
+    </submit-card>
+    <submit-card title="走访信息">
       <template #content>
         <div class="content">
           <cell
@@ -103,8 +103,8 @@
           >
         </div>
       </template>
-    </record-submit-card>
-    <record-submit-card title="上次走访信息">
+    </submit-card>
+    <submit-card title="上次走访信息">
       <template #title-right>
         <div class="more-record">
           历史走访
@@ -114,20 +114,20 @@
       <template #content>
         <record-card class="record-card" :item="record" />
       </template>
-    </record-submit-card>
+    </submit-card>
   </div>
 </template>
 
 <script>
 import Cell from '@/components/Cell';
-import RecordSubmitCard from '@/components/RecordSubmitCard';
+import SubmitCard from '@/components/SubmitCard';
 import RecordCard from '@/components/RecordCard';
-import PeopleCard from '@/components/PeopleCard';
+import PersonCard from '@/components/PersonCard';
 import { use } from '@/assets/js/import-vant';
 use(['Button']);
 export default {
   name: 'record-submit-page',
-  components: { Cell, RecordSubmitCard, RecordCard, PeopleCard },
+  components: { Cell, SubmitCard, RecordCard, PersonCard },
   data() {
     return {
       showCollapse: false,

@@ -15,8 +15,10 @@
           />
         </slot>
       </div>
-      <div class="title">{{ $route.meta.title }}</div>
-      <div class="right"></div>
+      <div class="title">{{ title }}</div>
+      <div class="right">
+        <slot name="right"></slot>
+      </div>
     </div>
   </header>
 </template>
@@ -24,6 +26,20 @@
 <script>
 export default {
   name: 'p-header',
+  data() {
+    return {
+      title: this.$route.meta.title,
+    };
+  },
+  mounted() {
+    this.$store.$off('changetitle');
+    this.$store.$on('changetitle', (title) => {
+      this.title = title;
+    });
+  },
+  destroyed() {
+    this.$store.$off('changetitle');
+  },
   methods: {
     onBack() {
       this.$router.back();

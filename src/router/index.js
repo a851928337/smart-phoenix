@@ -42,6 +42,16 @@ const routes = [
           title: '填写走访',
         },
       },
+      {
+        path: '/person/:id',
+        name: 'person-detail',
+        component: () => import('@/views/person-detail'),
+      },
+      {
+        path: '/person/edit/:id',
+        name: 'person-edit',
+        component: () => import('@/views/person-edit'),
+      },
     ],
   },
 ];
