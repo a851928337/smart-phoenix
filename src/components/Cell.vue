@@ -1,5 +1,5 @@
 <template>
-  <div class="cell">
+  <div :class="['cell', divierType]">
     <div
       :class="['content', type, { 'tap-transform': canClick, wrap: wrap }]"
       @click="onClick"
@@ -11,7 +11,21 @@
           :placeholder="placeholder"
           v-model="_value"
         />
-        <van-radio-group v-else-if="type === 'radio'"></van-radio-group>
+        <div class="radio-group" v-else-if="type === 'radio'">
+          <van-radio-group
+            direction="horizontal"
+            checked-color="#2A987A"
+            v-model="_value"
+          >
+            <van-radio
+              :icon-size="px2vw(30)"
+              v-for="(item, index) in list"
+              :key="index"
+              :name="item.value"
+              >{{ item.text }}</van-radio
+            >
+          </van-radio-group>
+        </div>
         <van-switch
           class="switch"
           v-else-if="type === 'switch'"
@@ -28,7 +42,7 @@
             checked-color="#2A987A"
           >
             <van-checkbox
-              v-for="(item, index) in checkboxList"
+              v-for="(item, index) in list"
               :key="index"
               :name="index"
               shape="square"
@@ -37,16 +51,37 @@
             </van-checkbox>
           </van-checkbox-group>
         </div>
+        <date-picker
+          v-model="showPicker"
+          v-else-if="type === 'date'"
+          @change="onChange"
+        ></date-picker>
+        <textarea
+          v-else-if="type === 'textarea'"
+          :placeholder="placeholder"
+          rows="5"
+        />
+        <picker
+          v-else-if="type === 'picker'"
+          v-model="showPicker"
+          :columns="list"
+        />
       </slot>
     </div>
   </div>
 </template>
 
 <script>
+import DatePicker from '@/components/DatePicker';
+import Picker from '@/components/Picker';
 import { use } from '@/assets/js/import-vant';
-use(['Radio', 'Switch', 'CheckboxGroup', 'Checkbox']);
+use(['RadioGroup', 'Radio', 'Switch', 'CheckboxGroup', 'Checkbox']);
+import { mixin } from '@/assets/mixin';
+
 export default {
   name: 'cell',
+  components: { DatePicker, Picker },
+  mixins: [mixin],
   props: {
     label: {
       required: true,
@@ -64,15 +99,22 @@ export default {
     wrap: {
       type: Boolean,
     },
-    checkboxList: {
+    list: {
       default: () => [],
+    },
+    init: {
+      default: '',
+    },
+    divierType: {
+      default: 'block',
     },
   },
   data() {
     return {
       checkBoxValues: [],
-      clickTypeList: ['click', 'switch'],
+      clickTypeList: ['click', 'switch', 'date', 'picker'],
       canClick: false,
+      showPicker: false,
     };
   },
   mounted() {
@@ -83,17 +125,22 @@ export default {
       const handlerMap = {
         click: this.handleNormalClick,
         switch: this.handleSwitchClick,
+        date: this.handleShowPicker,
+        picker: this.handleShowPicker,
       };
       handlerMap[this.type]?.(e);
     },
     onChange(v) {
-      this.$emit('change', [...v]);
+      this.$emit('change', v);
     },
     handleNormalClick(e) {
       this.$emit('click', e);
     },
     handleSwitchClick() {
       this._value = !this._value;
+    },
+    handleShowPicker() {
+      this.showPicker = !this.showPicker;
     },
   },
   computed: {
@@ -114,30 +161,61 @@ export default {
 
 <style lang="less" scoped>
 .cell {
+  &.block {
+    &:not(:last-child) {
+      border-bottom: .px2vw(16) [ @vw] solid #f0f0f0;
+    }
+    .content {
+      padding: .px2vw(39) [ @vw] .px2vw(50) [ @vw] .px2vw(30) [ @vw];
+    }
+  }
+  &.line {
+    padding: 0 .px2vw(50) [ @vw];
+    &:not(:last-child) {
+      .content {
+        border-bottom: 1px solid #f0f0f0;
+      }
+    }
+    .content {
+      padding: .px2vw(39) [ @vw] 0 .px2vw(30) [ @vw];
+    }
+  }
+  &.full-line {
+    padding: 0 .px2vw(50) [ @vw];
+    &:not(:last-child) {
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .content {
+      padding: .px2vw(39) [ @vw] 0 .px2vw(30) [ @vw];
+    }
+  }
+}
+.cell {
   background-color: #fff;
   &:first-child {
     border-top: 1px solid #e8e8e8;
   }
-  &:not(:last-child) {
-    border-bottom: .px2vw(16) [ @vw] solid #f0f0f0;
-  }
+
   .content {
     display: flex;
     align-items: center;
-    padding: .px2vw(39) [ @vw] .px2vw(50) [ @vw] .px2vw(30) [ @vw];
 
     &.switch,
     &.radio {
       justify-content: space-between;
     }
+
+    // 换行显示的
     &.wrap,
-    &.checkbox {
+    &.checkbox,
+    &.textarea {
       flex-wrap: wrap;
       .label {
         width: 100%;
         margin-bottom: .px2vw(17) [ @vw];
       }
     }
+
     .label {
       font-size: .px2vw(30) [ @vw];
       color: #333;
@@ -176,6 +254,7 @@ export default {
       .van-checkbox-group {
         display: flex;
         flex-wrap: wrap;
+        font-size: .px2vw(30) [ @vw];
         .van-checkbox {
           width: 33.3%;
           margin-right: 0;
@@ -187,6 +266,37 @@ export default {
             border-color: @green;
             border-radius: 3px;
           }
+        }
+      }
+    }
+
+    textarea {
+      flex: 1;
+      border: 1px solid #d2d2d2;
+      border-radius: 2px;
+      padding: .px2vw(22) [ @vw] .px2vw(31) [ @vw];
+      background-color: #f9f9f9;
+      color: #333;
+      font-size: .px2vw(30) [ @vw];
+      resize: none;
+      ::placeholder {
+        color: #999;
+      }
+    }
+
+    .radio-group {
+      flex: 1;
+    }
+
+    /deep/ .radio-group {
+      .van-radio-group {
+        display: flex;
+        justify-content: flex-end;
+        .van-radio:last-child {
+          margin-right: 0;
+        }
+        .van-radio__label {
+          font-size: .px2vw(30) [ @vw];
         }
       }
     }

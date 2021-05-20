@@ -7,6 +7,12 @@ import {
   Switch,
   CheckboxGroup,
   Checkbox,
+  ActionSheet,
+  Calendar,
+  DatetimePicker,
+  Picker,
+  RadioGroup,
+  Button,
 } from 'vant';
 
 const CompMap = {
@@ -17,6 +23,12 @@ const CompMap = {
   Switch,
   CheckboxGroup,
   Checkbox,
+  ActionSheet,
+  Calendar,
+  DatetimePicker,
+  Picker,
+  RadioGroup,
+  Button,
 };
 
 export function use(componentArr) {
