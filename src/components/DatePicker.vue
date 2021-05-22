@@ -27,7 +27,7 @@
               {{ time }}
             </div>
           </div>
-          <div class="confirm" @click="confirm(true)">确定</div>
+          <div class="confirm" @click="confirm">确定</div>
         </div>
         <van-calendar
           v-if="active === 'date'"
@@ -112,12 +112,10 @@ export default {
     onTapClick(v) {
       this.active = v;
     },
-    confirm(isClick = false) {
+    confirm() {
       this.val = [this.formatDate(this.date), this.time];
-      if (isClick) {
-        this.$emit('change', this.val.join(' '));
-        this._value = false;
-      }
+      this.$emit('change', this.val.join(' '));
+      this._value = false;
     },
   },
 };

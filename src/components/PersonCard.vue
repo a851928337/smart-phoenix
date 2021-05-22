@@ -2,37 +2,38 @@
   <router-link
     tag="div"
     class="person-card"
-    :to="{ name: 'person-detail', params: { id: item.id } }"
+    :to="{ name: 'person-detail', params: { id: item.resident_id } }"
   >
     <div class="row1">
-      <div class="name">{{ item.name }}</div>
-      <i v-if="item.member" class="iconfont icon-xingxing" />
+      <div class="name">{{ item.resident_name }}</div>
+      <i v-if="item.is_cpc === '是'" class="iconfont icon-xingxing" />
     </div>
     <div class="row2">
       <div class="row">
         <div class="left">
           <img src="~@/assets/image/shipment.png" />
-          {{  shipment(item.shipment) }}
+          {{ shipment(item.relation) }}
         </div>
         <div class="right">
           <img src="~@/assets/image/gender.png" />
-          {{  gender(item.gender) }}
+          {{ gender(item.resident_sex) }}
         </div>
       </div>
       <div class="row">
         <div class="left">
           <img src="~@/assets/image/education.png" />
-          {{  education(item.education) }}
+          {{ education(item.education) }}
         </div>
         <div class="right">
           <img src="~@/assets/image/work.png" />
-          {{ item.work }}
+          {{ item.work_unit }}
         </div>
       </div>
       <div class="row">
-        <span v-for="(item, index) in item.identity" :key="index">
-          {{  identity(item) }}</span
-        >
+        <span>{{identity(item.people_class)}}</span>
+        <!-- <span v-for="(item, index) in item.identity" :key="index">
+          {{ identity(item) }}</span
+        > -->
       </div>
     </div>
   </router-link>

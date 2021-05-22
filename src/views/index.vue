@@ -16,49 +16,39 @@
       /></router-link>
     </div>
     <div class="list">
-      <pull-refresh-list
-        :refresh.sync="refresh"
-        :loading.sync="loading"
-        :finished="finished"
-        @load="onLoad"
-        @refresh="onRefresh"
+      <router-link
+        tag="div"
+        v-for="item in $store.householdList"
+        :key="item.id"
+        class="item tap-transform"
+        :to="{ path: `/record/submit/${item.household_id}` }"
       >
-        <router-link
-          tag="div"
-          v-for="item in $store.householdList"
-          :key="item.id"
-          class="item tap-transform"
-          :to="{ path: `/record/submit/${item.household_id}` }"
-        >
-          <div class="row1">
-            <div class="no">{{ item.household_name }}</div>
-            <div class="people">
-              <img src="~@/assets/image/people.png" />
-              {{ item.num }}人
-            </div>
+        <div class="row1">
+          <div class="no">{{ item.household_name }}</div>
+          <div class="people">
+            <img src="~@/assets/image/people.png" />
+            {{ item.num }}人
           </div>
-          <div class="row2">
-            <div class="info">
-              <div class="name">{{ item.resident_name }}</div>
-              <div class="phone">
-                <img src="~@/assets/image/phone.png" />{{ item.contact_no }}
-              </div>
-              <div class="address">{{ item.resident_address }}</div>
+        </div>
+        <div class="row2">
+          <div class="info">
+            <div class="name">{{ item.resident_name }}</div>
+            <div class="phone">
+              <img src="~@/assets/image/phone.png" />{{ item.contact_no }}
             </div>
+            <div class="address">{{ item.resident_address }}</div>
           </div>
-        </router-link>
-      </pull-refresh-list>
+        </div>
+      </router-link>
     </div>
   </div>
 </template>
 
 <script>
-import PullRefreshList from '@/components/PullRefreshList';
 import { getHouseholdList } from '@/api/api';
 
 export default {
   name: 'index-page',
-  components: { PullRefreshList },
   data() {
     return {
       refresh: false,
@@ -84,21 +74,17 @@ export default {
         });
       });
     },
-    onLoad() {
-      this.initHouseholdInfo().then(() => {
-        this.loading = false;
-        this.finished = true;
-      });
-    },
-    onRefresh() {
-      this.initHouseholdInfo().then(() => {
-        this.refresh = false;
-      });
-    },
     onNavigatorTo(e) {
       const { id } = e.target;
       if (id !== undefined) {
         this.$route.push({});
+      }
+    },
+  },
+  watch: {
+    '$store.appInfo.app_token': async function (nVal) {
+      if (nVal) {
+        this.initHouseholdInfo();
       }
     },
   },

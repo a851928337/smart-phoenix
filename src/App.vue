@@ -18,8 +18,8 @@ export default {
   },
   methods: {
     async thirdLogin() {
-      const tk = location.href.split('tk=')[1] || localStorage.getItem('tk');
-      localStorage.setItem('tk', tk);
+      const tk = location.href.split('tk=')[1] || sessionStorage.getItem('tk');
+      sessionStorage.setItem('tk', tk);
       const res = await login({
         app_id: this.$store.appId,
         code: tk,

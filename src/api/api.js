@@ -16,3 +16,7 @@ export function getConfig() {
 export function getHouseholdList() {
   return api.get('/ddc/es/grid_visit/get_my_info');
 }
+
+export function getHouseholdDetail(id) {
+  return api.get(`/ddc/es/grid_visit/get_household_detail?household_id=${id}`);
+}

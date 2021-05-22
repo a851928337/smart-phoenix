@@ -2,7 +2,9 @@
   <div class="record-submit-page">
     <submit-card title="户地址">
       <template #content>
-        <div class="content address">淄博市临淄区凤凰镇什么村几组几号</div>
+        <div class="content address">
+          {{ householdInfo.household_address || '暂无数据' }}
+        </div>
       </template>
     </submit-card>
 
@@ -33,24 +35,24 @@
           <cell
             label="被访人姓名"
             placeholder="请输入被访人姓名"
-            v-model="form.name"
+            v-model="form.interviewee_name"
           />
           <cell
             label="手机号码"
             placeholder="请输入被访人手机号码"
-            v-model="form.phone"
+            v-model="form.interviewee_mobile"
           />
-          <cell label="是户主" type="switch" v-model="form.isHead" />
-          <cell label="是空户" type="switch" v-model="form.isEmpty" />
-          <cell label="户口在本辖区内" type="switch" v-model="form.isInArea" />
+          <cell label="是户主" type="switch" v-model="form.is_householder" />
+          <cell label="是空户" type="switch" v-model="form.is_empty" />
+          <cell label="户口在本辖区内" type="switch" v-model="form.is_local" />
           <cell
             label="户口所在地"
             :wrap="true"
-            v-model="form.address"
+            v-model="form.household_address"
             placeholder="请输入被访人户口所在地"
           />
           <cell
-            label="户口在本辖区内"
+            label="重点走访类型"
             type="checkbox"
             @change="onPointTypeChange"
             :list="pointTypeList"
@@ -67,22 +69,28 @@
             @click="onChooseDate"
             @change="onDateChange"
           />
-          <cell label="有反映问题" type="switch" v-model="form.isProblem" />
+          <cell label="有反映问题" type="switch" v-model="form.is_problem" />
           <cell
             label="问题描述"
             type="textarea"
             placeholder="请输入问题具体内容"
+            v-model="form.problem_desc"
           />
-          <cell label="问题分类" type="picker" :list="problemList" />
+          <cell
+            label="问题分类"
+            type="picker"
+            :list="problemList"
+            @change="onProblemTypeChange"
+          />
           <cell
             :divier-type="form.method ? 'line' : 'block'"
             label="整改方式"
             type="radio"
             :list="methodList"
-            v-model="form.method"
+            v-model="form.solve_method"
           />
           <cell
-            v-if="form.method"
+            v-if="form.solve_method === '非现场解决'"
             label="截止时间"
             type="date"
             @click="onChooseDate"
@@ -94,7 +102,7 @@
             label="问题进度"
             type="radio"
             :list="processList"
-            v-model="form.process"
+            v-model="form.problem_process"
           />
         </div>
         <div class="submit-btn">
@@ -125,97 +133,80 @@ import RecordCard from '@/components/RecordCard';
 import PersonCard from '@/components/PersonCard';
 import { use } from '@/assets/js/import-vant';
 use(['Button']);
+
+import { getHouseholdDetail } from '@/api/api';
 export default {
   name: 'record-submit-page',
   components: { Cell, SubmitCard, RecordCard, PersonCard },
   data() {
     return {
       showCollapse: false,
+      householdInfo: {},
       form: {
-        name: '',
-        phone: '',
-        isHead: false,
-        isEmpty: true,
-        isInArea: true,
-        address: '',
-        pointType: [],
-        date: '',
-        isProblem: true,
-        method: 0,
+        household_id: '', // 户id
+        interviewee_name: '', // 受访人姓名
+        interviewee_mobile: '', // 受访人手机号码
+        is_householder: false, // 是否户主
+        is_empty: true, // 是否空户
+        is_local: true, // 户口在本辖区内
+        household_address: '', // 户口所在地
+        visit_class: [], // 重点走访类型
+        visit_time: '', //  走访时间
+        is_problem: true, // 是否反映问题
+        problem_desc: '', // 问题描述
+        problem_type: '', // 问题分类
+        solve_method: '现场解决', // 解决方法
+        solve_desc: '', // 整改措施
         endDate: '',
-        process: 0,
+        problem_process: 0, // 问题进度
       },
-      peopleList: [
-        {
-          id: 0,
-          name: '柳园',
-          shipment: 0,
-          gender: 0,
-          education: 0,
-          work: '山东省XXXX公司',
-          identity: [0],
-          member: true,
-        },
-        {
-          id: 1,
-          name: '柳园',
-          shipment: 0,
-          gender: 0,
-          education: 0,
-          work: '山东省XXXX公司',
-          identity: [0],
-          member: true,
-        },
-        {
-          id: 2,
-          name: '柳园',
-          shipment: 0,
-          gender: 0,
-          education: 0,
-          work: '山东省XXXX公司',
-          identity: [0],
-          member: true,
-        },
-      ],
+      peopleList: [],
       methodList: [
         { name: '现场解决', code: '现场解决' },
         { name: '非现场解决', code: '非现场解决' },
       ],
       processList: [
-        { name: '已解决', code: '已解决' },
-        { name: '进行中', code: '进行中' },
+        { name: '进行中', code: 0 },
+        { name: '已解决', code: 1 },
       ],
-      record: {
-        id: '0',
-        name: '张君雅',
-        problem: [0, 1],
-        isOnSide: true,
-        description:
-          '问题描述：生态环境出现现场解决的，事情在2021年12月封路中午生态环境出现，现场解决的事情在，2021年12月封路中午，现场解决的事情在，2021年12月封路中午，现场解决的事情在，2021年12月封路中午',
-        status: 0,
-        date: '2021-05-10',
-      },
+      record: {},
     };
   },
+  mounted() {
+    this.init();
+  },
   methods: {
+    async init() {
+      const { id } = this.$route.params;
+      const res = await getHouseholdDetail(id);
+      const { body } = res.data;
+      const { household, last_grid_visit, list } = body;
+      this.peopleList = list;
+      this.householdInfo = household;
+      this.record = last_grid_visit[0];
+      console.log(res);
+    },
     triggerCollapse() {
       this.showCollapse = !this.showCollapse;
     },
     onPointTypeChange(v) {
       console.log(v);
-      this.form.pointType = v;
+      this.form.visit_class = v;
     },
     onChooseDate() {
       console.log('选择日期');
     },
     onDateChange(v) {
-      this.form.date = v;
+      this.form.visit_time = v;
     },
     onMethodChange(v) {
       this.form.method = v;
     },
     onEndDateChange(v) {
       this.form.endDate = v;
+    },
+    onProblemTypeChange(v) {
+      this.form.problem_type = v;
     },
   },
   computed: {

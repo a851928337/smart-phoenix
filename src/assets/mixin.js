@@ -1,8 +1,12 @@
 import { store } from './store';
+import dayjs from 'dayjs';
 export const mixin = {
   methods: {
     px2vw(px) {
       return (px / 750) * 100 + 'vw';
+    },
+    date(v, format = 'YYYY-MM-DD HH:mm') {
+      return dayjs(v).format(format);
     },
     problem(v) {
       return store.problemList.filter((item) => {

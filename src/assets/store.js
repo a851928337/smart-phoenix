@@ -30,9 +30,9 @@ export const store = new Vue({
       { name: '女', code: '女' },
     ],
     processList: [
-      { name: '全部', code: '全部' },
-      { name: '进行中', code: '进行中' },
-      { name: '已解决', code: '已解决' },
+      { name: '全部', code: '' },
+      { name: '进行中', code: 0 },
+      { name: '已解决', code: 1 },
     ],
   },
   methods: {

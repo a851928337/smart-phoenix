@@ -1,33 +1,27 @@
 <template>
   <router-link
     tag="div"
-    :to="{ path: `/record/${item.id}` }"
+    :to="{ path: `/record/${item.grid_visit_id}` }"
     class="record-card tap-transform"
   >
     <div class="row1">
-      <div class="name">{{ item.name }}</div>
+      <div class="name">{{ item.interviewee_name }}</div>
       <div class="problem-list">
-        <div
-          class="problem"
-          v-for="(_item, _index) in item.problem"
-          :key="_index"
-        >
-          {{ problem(_item) }}
-        </div>
+        <div class="problem">{{ item.problem_type }}</div>
         <div class="is-on-side">
-          {{ item.isOnSide | isOnSide }}
+          {{ item.solve_method }}
         </div>
       </div>
     </div>
     <div class="row2">
-      {{ item.description }}
+      {{ item.problem_desc }}
     </div>
     <div class="row3">
       <div class="status" :style="{ color: getStatusColor(item.status) }">
-        {{ process(item.status) }}
+        {{ process(item.problem_process) }}
       </div>
       <div class="date">
-        {{ item.date }}
+        {{ date(item.visit_time, 'YYYY-MM-DD') }}
       </div>
     </div>
   </router-link>

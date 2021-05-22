@@ -59,12 +59,14 @@
         <textarea
           v-else-if="type === 'textarea'"
           :placeholder="placeholder"
+          v-model="_value"
           rows="5"
         />
         <picker
           v-else-if="type === 'picker'"
           v-model="showPicker"
           :columns="list"
+          @change="onChange"
         />
       </slot>
     </div>
