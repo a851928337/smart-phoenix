@@ -53,7 +53,7 @@
             :data-index="index"
             @click="setIndex"
           >
-            {{ item.label }}
+            {{ item.name }}
           </div>
         </div>
       </div>
@@ -65,7 +65,7 @@
           :data-index="index"
           @click="setIndex"
         >
-          {{ item.label }}
+          {{ item.name }}
         </div>
       </div>
     </div>

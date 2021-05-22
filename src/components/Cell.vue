@@ -21,8 +21,8 @@
               :icon-size="px2vw(30)"
               v-for="(item, index) in list"
               :key="index"
-              :name="item.value"
-              >{{ item.text }}</van-radio
+              :name="item.code"
+              >{{ item.name }}</van-radio
             >
           </van-radio-group>
         </div>
@@ -47,7 +47,7 @@
               :name="index"
               shape="square"
             >
-              {{ item.text }}
+              {{ item.name }}
             </van-checkbox>
           </van-checkbox-group>
         </div>

@@ -3,22 +3,36 @@ import dayjs from 'dayjs';
 
 export const store = new Vue({
   data: {
+    appId: 'ed7311670c0e4a6a93c93a0cd75fc55b',
+    appKey: 'zb_ep',
+    userInfo: {},
+    appInfo: {},
     routeList: [],
     dateList: [],
-    noList: [{ label: '全部总户', value: '' }],
-    problemList: [
-      { label: '全部问题', value: '' },
-      { label: '生态环境', value: 0 },
-      { label: '基础教育', value: 1 },
-      { label: '医疗卫生', value: 2 },
-      { label: '社会治安', value: 3 },
-      { label: '就业问题', value: 4 },
-      { label: '其他', value: 5 },
+    noList: [],
+    householdList: [],
+    identityList: [],
+    educationList: [],
+    positionList: [],
+    pointTypeList: [],
+    problemList: [],
+    shipmentList: [
+      { name: '户主', code: '户主' },
+      { name: '配偶', code: '配偶' },
+      { name: '子', code: '子' },
+      { name: '女', code: '女' },
+      { name: '父母', code: '父母' },
+      { name: '兄弟姐妹', code: '兄弟姐妹' },
+      { name: '（外）孙子女', code: '（外）孙子女' },
+    ],
+    genderList: [
+      { name: '男', code: '男' },
+      { name: '女', code: '女' },
     ],
     processList: [
-      { label: '全部', value: '' },
-      { label: '进行中', value: 0 },
-      { label: '已解决', value: 1 },
+      { name: '全部', code: '全部' },
+      { name: '进行中', code: '进行中' },
+      { name: '已解决', code: '已解决' },
     ],
   },
   methods: {

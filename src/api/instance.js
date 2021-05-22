@@ -1,15 +1,29 @@
 import axios from 'axios';
+import { store } from '@/assets/store';
 
-const appId = 'ed7311670c0e4a6a93c93a0cd75fc55b';
-
-const api = axios.create({
+const instance = axios.create({
   baseURL: 'http://182.92.92.250:714',
-  headers: { 'Content-Type': 'application/json', app_id: appId },
+  headers: { 'Content-Type': 'application/json', app_id: store.appId },
 });
 
-api.interceptors.request.use((config) => {
-  config.headers.app_token = localStorage.getItem('token');
+instance.interceptors.request.use((config) => {
+  config.headers.app_token = store.appInfo.app_token;
   return config;
 });
+
+const api = {
+  post: instance.post,
+  get: (url, data) => {
+    const params = data
+      ? Object.keys(data)
+          .map((key) => {
+            return `${key}=${data[key]}`;
+          })
+          .join('&')
+      : '';
+    const _url = params ? `${url}?${params}` : url;
+    return instance.get(_url);
+  },
+};
 
 export default api;

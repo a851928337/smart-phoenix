@@ -177,28 +177,13 @@ export default {
           member: true,
         },
       ],
-      pointTypeList: [
-        { text: '老党员' },
-        { text: '困难群众' },
-        { text: '孤寡老人' },
-        { text: '留守儿童' },
-      ],
-      problemList: [
-        { text: '环境治理' },
-        { text: '基础教育' },
-        { text: '医疗卫生' },
-        { text: '社会治安' },
-        { text: '文体生活' },
-        { text: '就业问题' },
-        { text: '其他' },
-      ],
       methodList: [
-        { text: '现场解决', value: 0 },
-        { text: '非现场解决', value: 1 },
+        { name: '现场解决', code: '现场解决' },
+        { name: '非现场解决', code: '非现场解决' },
       ],
       processList: [
-        { text: '已解决', value: 0 },
-        { text: '进行中', value: 1 },
+        { name: '已解决', code: '已解决' },
+        { name: '进行中', code: '进行中' },
       ],
       record: {
         id: '0',
@@ -231,6 +216,14 @@ export default {
     },
     onEndDateChange(v) {
       this.form.endDate = v;
+    },
+  },
+  computed: {
+    pointTypeList() {
+      return this.$store.pointTypeList;
+    },
+    problemList() {
+      return this.$store.problemList;
     },
   },
   watch: {

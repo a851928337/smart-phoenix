@@ -4,8 +4,11 @@
       <div class="left">
         <img src="~@/assets/image/avatar.png" class="avatar" />
         <div class="info-part">
-          <div class="name">王先生</div>
-          <div class="info">西刘村 20户</div>
+          <div class="name">{{ $store.userInfo.user_name }}</div>
+          <div class="info">
+            {{ $store.userInfo.department_name || '暂无数据' }}
+            {{ $store.userInfo.household_num }}户
+          </div>
         </div>
       </div>
       <router-link class="right" to="/record" tag="div"
@@ -22,25 +25,25 @@
       >
         <router-link
           tag="div"
-          v-for="item in list"
+          v-for="item in $store.householdList"
           :key="item.id"
           class="item tap-transform"
-          :to="{ path: `/record/submit/${item.id}` }"
+          :to="{ path: `/record/submit/${item.household_id}` }"
         >
           <div class="row1">
-            <div class="no">{{ item.no }}</div>
+            <div class="no">{{ item.household_name }}</div>
             <div class="people">
               <img src="~@/assets/image/people.png" />
-              {{ item.people }}人
+              {{ item.num }}人
             </div>
           </div>
           <div class="row2">
             <div class="info">
-              <div class="name">{{ item.name }}</div>
+              <div class="name">{{ item.resident_name }}</div>
               <div class="phone">
-                <img src="~@/assets/image/phone.png" />{{ item.phone }}
+                <img src="~@/assets/image/phone.png" />{{ item.contact_no }}
               </div>
-              <div class="address">{{ item.address }}</div>
+              <div class="address">{{ item.resident_address }}</div>
             </div>
           </div>
         </router-link>
@@ -51,6 +54,8 @@
 
 <script>
 import PullRefreshList from '@/components/PullRefreshList';
+import { getHouseholdList } from '@/api/api';
+
 export default {
   name: 'index-page',
   components: { PullRefreshList },
@@ -63,32 +68,30 @@ export default {
     };
   },
   methods: {
-    loadData() {
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          for (let i = 0; i < 10; i++) {
-            this.list.push({
-              id: i,
-              no: '101',
-              people: 5,
-              name: '张君雅',
-              phone: '13884736947',
-              address: '淄博市临淄区凤凰镇什么村几组几号',
-            });
-            resolve();
-          }
-        }, 500);
+    async initHouseholdInfo() {
+      const res = await getHouseholdList();
+      const { user, list } = res.data.body;
+      this.$store.userInfo = {
+        ...user,
+      };
+      console.log(list);
+      this.$store.householdList = list;
+      this.$store.noList = [{ name: '全部总户', code: '' }];
+      list.forEach((item) => {
+        this.$store.noList.push({
+          name: item.household_name,
+          code: item.household_name,
+        });
       });
     },
     onLoad() {
-      this.loadData().then(() => {
+      this.initHouseholdInfo().then(() => {
         this.loading = false;
         this.finished = true;
       });
     },
     onRefresh() {
-      this.list = [];
-      this.loadData().then(() => {
+      this.initHouseholdInfo().then(() => {
         this.refresh = false;
       });
     },

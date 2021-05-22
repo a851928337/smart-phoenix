@@ -1,14 +1,14 @@
 <template>
   <div class="picker">
     <div class="text">
-      {{ columns[index].text }}
+      {{ columns[index] ? columns[index].name : '' }}
       <i class="iconfont icon-you" />
     </div>
     <van-action-sheet :round="false" v-model="_value" get-container="body">
       <van-picker
         :columns="columns"
         show-toolbar
-        value-key="text"
+        value-key="name"
         @confirm="onConfirm"
         @cancel="onCancel"
       />

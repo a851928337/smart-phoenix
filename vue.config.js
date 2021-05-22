@@ -8,6 +8,17 @@ module.exports = {
       addStyleResource(config.module.rule('less').oneOf(type))
     );
   },
+  devServer: {
+    proxy: {
+      '/ddc': {
+        target: 'http://182.92.92.250:714 ',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/ddc': '/ddc',
+        },
+      },
+    },
+  },
 };
 
 function addStyleResource(rule) {
