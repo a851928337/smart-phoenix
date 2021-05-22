@@ -15,7 +15,9 @@
         </div>
         <div class="row" v-for="(item, index) in card1List" :key="index">
           <div class="label">{{ item.label }}</div>
-          <div class="value">{{ detail[item.key] }}</div>
+          <div class="value">
+            {{ filter(item) }}
+          </div>
         </div>
       </div>
       <div class="card">
@@ -24,7 +26,9 @@
         </div>
         <div class="row" v-for="(item, index) in card2List" :key="index">
           <div class="label">{{ item.label }}</div>
-          <div class="value">{{ detail[item.key] }}</div>
+          <div class="value" :style="{ color: item.color || '#333' }">
+            {{ filter(item) }}
+          </div>
         </div>
       </div>
     </div>
@@ -32,11 +36,13 @@
 </template>
 
 <script>
+import { mixin } from '@/assets/mixin';
 import PullRefreshList from '@/components/PullRefreshList';
-
+import { getRecordDetail } from '@/api/api';
 export default {
   name: 'visit-record-detail-page',
   components: { PullRefreshList },
+  mixins: [mixin],
   data() {
     return {
       refresh: false,
@@ -44,45 +50,47 @@ export default {
       finished: false,
       detail: {},
       card1List: [
-        { label: '被访人', key: 'name' },
-        { label: '手机号', key: 'phone' },
-        { label: '是户主', key: 'isHead' },
-        { label: '是空户', key: 'isEmpty' },
-        { label: '户口在本辖区内', key: 'isInArea' },
-        { label: '户口所在地', key: 'address' },
-        { label: '重点访类型', key: 'keyType' },
+        { label: '被访人', key: 'interviewee_name' },
+        { label: '手机号', key: 'interviewee_mobile' },
+        { label: '是户主', key: 'is_householder' },
+        { label: '是空户', key: 'is_empty' },
+        { label: '户口在本辖区内', key: 'is_local' },
+        { label: '户口所在地', key: 'household_address' },
+        { label: '重点访类型', key: 'visit_class' },
       ],
       card2List: [
-        { label: '走访时间', key: 'date' },
-        { label: '是否反映问题', key: 'isProblem' },
-        { label: '问题描述', key: 'description' },
-        { label: '问题分类', key: 'problemType' },
-        { label: '限时整改', key: 'limited' },
+        { label: '走访时间', key: 'visit_time', filter: this.date },
+        { label: '是否反映问题', key: 'is_problem' },
+        { label: '问题描述', key: 'problem_desc' },
+        { label: '问题分类', key: 'problem_type' },
+        { label: '整改方式', key: 'solve_method' },
+        { label: '整改时限截止到', key: 'limited' },
+        {
+          label: '问题进度',
+          key: 'problem_process',
+          filter: this.process,
+          color: '#0B6BDC',
+        },
       ],
     };
   },
   methods: {
-    onLoad() {
-      setTimeout(() => {
-        this.detail = {
-          name: '王璐',
-          phone: '18840921707',
-          isHead: '是',
-          isEmpty: '否',
-          isInArea: '是',
-          address: '山东省临淄市先休息休息小区3栋',
-          keyType: '老党员',
-          date: '2021-05-05  12:56',
-          isProblem: '是',
-          description:
-            '户门口长期堆放自行车，影响美观和出行度便利影响美观和出行度便利',
-          problemType: '生态环境',
-          limited: '限时整改',
-        };
-        this.refresh = false;
-        this.loading = false;
-        this.finished = true;
-      }, 500);
+    filter(item) {
+      const value = this.detail[item.key];
+      let res = '无';
+      if (value?.toString()) {
+        res = item.filter ? item.filter(value) : value;
+      }
+      return res;
+    },
+    async onLoad() {
+      const { id } = this.$route.params;
+      const res = await getRecordDetail(id);
+      const { body } = res.data;
+      this.detail = body;
+      this.refresh = false;
+      this.loading = false;
+      this.finished = true;
     },
   },
 };
@@ -122,7 +130,6 @@ export default {
       }
       .value {
         flex: 1;
-        color: #333;
       }
     }
   }

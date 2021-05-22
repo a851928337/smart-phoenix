@@ -1,9 +1,5 @@
 <template>
-  <router-link
-    tag="div"
-    class="person-card"
-    :to="{ name: 'person-detail', params: { id: item.resident_id } }"
-  >
+  <div class="person-card" @click="goTo">
     <div class="row1">
       <div class="name">{{ item.resident_name }}</div>
       <i v-if="item.is_cpc === '是'" class="iconfont icon-xingxing" />
@@ -30,13 +26,13 @@
         </div>
       </div>
       <div class="row">
-        <span>{{identity(item.people_class)}}</span>
+        <span>{{ identity(item.people_class) }}</span>
         <!-- <span v-for="(item, index) in item.identity" :key="index">
           {{ identity(item) }}</span
         > -->
       </div>
     </div>
-  </router-link>
+  </div>
 </template>
 
 <script>
@@ -47,6 +43,14 @@ export default {
   props: {
     item: {
       default: () => {},
+    },
+  },
+  methods: {
+    goTo() {
+      this.$store.personInfo = this.item;
+      this.$router.push({
+        name: 'person-detail',
+      });
     },
   },
 };

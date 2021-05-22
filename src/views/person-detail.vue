@@ -1,84 +1,66 @@
 <template>
-  <pull-refresh-list
-    class="people-detail-page"
-    finished-text=""
-    :refresh.sync="refresh"
-    :loading.sync="loading"
-    :finished="finished"
-    @load="onLoad"
-    @refresh="onLoad"
-  >
-    <div v-if="!loading">
-      <div class="card">
-        <div class="row" v-for="(item, index) in card1List" :key="index">
-          <div class="label">
-            <img :src="item.icon" />
-            {{ item.label }}
-          </div>
-          <div class="value">{{ filter(item, detail[item.key]) }}</div>
+  <div class="people-detail-page">
+    <div class="card">
+      <div class="row" v-for="(item, index) in card1List" :key="index">
+        <div class="label">
+          <img :src="item.icon" />
+          {{ item.label }}
         </div>
+        <div class="value">{{ detail[item.key] }}</div>
       </div>
-      <div class="card">
-        <div class="row" v-for="(item, index) in card2List" :key="index">
-          <div class="label">
-            <img :src="item.icon" />
-            {{ item.label }}
-          </div>
-          <div class="value">{{ filter(item, detail[item.key]) }}</div>
+    </div>
+    <div class="card">
+      <div class="row" v-for="(item, index) in card2List" :key="index">
+        <div class="label">
+          <img :src="item.icon" />
+          {{ item.label }}
         </div>
+        <div class="value">{{ detail[item.key] }}</div>
       </div>
-      <div class="card">
-        <div class="content">
-          <div class="row">
-            <div class="label">是否党员</div>
-            <div class="value">{{ detail.isMember ? '是' : '否' }}</div>
-          </div>
-          <div class="row">
-            <div class="label">人群分类</div>
-            <div class="value">{{ identityStr }}</div>
-          </div>
-        </div>
-      </div>
-      <div class="card">
+    </div>
+    <div class="card">
+      <div class="content">
         <div class="row">
-          <div class="label">备注</div>
-          <div class="value">{{ detail.remark || '无' }}</div>
+          <div class="label">是否党员</div>
+          <div class="value">{{ detail.is_cpc }}</div>
+        </div>
+        <div class="row">
+          <div class="label">人群分类</div>
+          <div class="value">{{ detail.people_class }}</div>
         </div>
       </div>
     </div>
-  </pull-refresh-list>
+    <div class="card">
+      <div class="row">
+        <div class="label">备注</div>
+        <div class="value">{{ detail.remark || '无' }}</div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
-import PullRefreshList from '@/components/PullRefreshList';
 import { mixin } from '@/assets/mixin';
-const imgBaseUrl = '~@/assets/image/';
 export default {
   name: 'visit-record-detail-page',
-  components: { PullRefreshList },
   mixins: [mixin],
   data() {
     return {
-      refresh: false,
-      loading: false,
-      finished: false,
-      detail: {},
+      detail: this.$store.personInfo,
       card1List: [
         {
           label: '与户主关系',
-          key: 'shipment',
-          filter: this.shipment,
+          key: 'relation',
           icon: require('@/assets/image/shipment.png'),
         },
         {
           label: '性别',
-          key: 'gender',
-          filter: this.gender,
+          key: 'resident_sex',
           icon: require('@/assets/image/gender.png'),
         },
         {
           label: '身份证号',
-          key: 'idCard',
+          key: 'resident_no',
           icon: require('@/assets/image/idcard.png'),
         },
       ],
@@ -86,28 +68,26 @@ export default {
         {
           label: '文化程度',
           key: 'education',
-          filter: this.education,
           icon: require('@/assets/image/education.png'),
         },
         {
           label: '工作单位',
-          key: 'work',
+          key: 'work_unit',
           icon: require('@/assets/image/work.png'),
         },
         {
           label: '职业',
-          key: 'position',
-          filter: this.position,
+          key: 'profession',
           icon: require('@/assets/image/work.png'),
         },
         {
           label: '常住地',
-          key: 'address',
+          key: 'resident_address',
           icon: require('@/assets/image/work.png'),
         },
         {
           label: '联系电话',
-          key: 'phone',
+          key: 'contact_no',
           icon: require('@/assets/image/phone2.png'),
         },
       ],
@@ -123,48 +103,10 @@ export default {
         },
       });
     });
+    this.$store.$emit('changetitle', this.detail.resident_name);
   },
   destroyed() {
     this.$store.$off('title-right-click');
-  },
-  methods: {
-    filter(item, value) {
-      const f = item.filter;
-      if (f) {
-        return f(value);
-      } else {
-        return value;
-      }
-    },
-    onLoad() {
-      setTimeout(() => {
-        this.$store.$emit('changetitle', '王璐');
-        this.detail = {
-          shipment: 0,
-          gender: 0,
-          idCard: 3200000000000000,
-          education: 0,
-          work: '山东省临淄市先休息休息小区3栋',
-          position: 0,
-          address: '山东省临淄市先休息休息小区3栋',
-          phone: '13888888888',
-          isMember: true,
-          identity: [0, 1],
-        };
-        this.refresh = false;
-        this.loading = false;
-        this.finished = true;
-      }, 500);
-    },
-  },
-  computed: {
-    identityStr() {
-      return this.detail.identity
-        ?.map((item) => {
-          return this.identity(item);
-        })
-        .join('、');
-    },
   },
 };
 </script>

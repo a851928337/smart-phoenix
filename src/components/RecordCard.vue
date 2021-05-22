@@ -17,7 +17,7 @@
       {{ item.problem_desc }}
     </div>
     <div class="row3">
-      <div class="status" :style="{ color: getStatusColor(item.status) }">
+      <div class="status" :style="{ color: getStatusColor(item.problem_process) }">
         {{ process(item.problem_process) }}
       </div>
       <div class="date">

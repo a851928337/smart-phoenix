@@ -114,10 +114,17 @@
     </submit-card>
     <submit-card title="上次走访信息">
       <template #title-right>
-        <div class="more-record">
+        <router-link
+          tag="div"
+          class="more-record"
+          :to="{
+            name: 'visit-record',
+            query: { no: householdInfo.household_name },
+          }"
+        >
           历史走访
           <i class="iconfont icon-you" />
-        </div>
+        </router-link>
       </template>
       <template #content>
         <record-card class="record-card" :item="record" />
@@ -184,13 +191,11 @@ export default {
       this.peopleList = list;
       this.householdInfo = household;
       this.record = last_grid_visit[0];
-      console.log(res);
     },
     triggerCollapse() {
       this.showCollapse = !this.showCollapse;
     },
     onPointTypeChange(v) {
-      console.log(v);
       this.form.visit_class = v;
     },
     onChooseDate() {
@@ -215,11 +220,6 @@ export default {
     },
     problemList() {
       return this.$store.problemList;
-    },
-  },
-  watch: {
-    'form.isHead': function (nVal) {
-      console.log(nVal);
     },
   },
 };

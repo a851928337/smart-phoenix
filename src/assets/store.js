@@ -36,6 +36,7 @@ export const store = new Vue({
       { name: '男', code: '男' },
       { name: '女', code: '女' },
     ],
+    personInfo: {},
   },
   methods: {
     getMonthList(count) {

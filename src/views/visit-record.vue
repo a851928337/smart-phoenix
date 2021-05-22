@@ -1,6 +1,6 @@
 <template>
   <div class="visit-record-page">
-    <record-condition v-model="condition" />
+    <record-condition v-model="condition" :no="$route.query.no" />
     <div class="list">
       <pull-refresh-list
         :refresh.sync="refresh"
@@ -34,7 +34,6 @@ export default {
   },
   methods: {
     getQuery() {
-      console.log(this.condition);
       return {
         problem_type: this.condition?.problem?.code || '',
         household_id: this.condition?.no?.code || '',

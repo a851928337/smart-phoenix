@@ -77,6 +77,11 @@ import { use } from '@/assets/js/import-vant';
 use(['Search']);
 export default {
   name: 'record-condition',
+  props: {
+    no: {
+      default: '',
+    },
+  },
   data() {
     return {
       show: false,
@@ -107,11 +112,22 @@ export default {
   mounted() {
     this.initWatcher();
     this.initParentHeight();
+    this.$nextTick(() => {
+      this.initSearch();
+    });
   },
   destroyed() {
     this.unwatch();
   },
   methods: {
+    initSearch() {
+      if (this.no) {
+        this.search = this.no;
+        this.noIndex = 0;
+        this.condition.no = this.noList[this.noIndex];
+        this._value = this.condition;
+      }
+    },
     initWatcher() {
       this.unwatch = this.$watch(
         function () {

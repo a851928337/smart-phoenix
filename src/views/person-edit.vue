@@ -157,7 +157,6 @@ export default {
       this.showCollapse = !this.showCollapse;
     },
     onPointTypeChange(v) {
-      console.log(v);
       this.form.pointType = v;
     },
     onChooseDate() {

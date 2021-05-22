@@ -14,9 +14,7 @@ export const mixin = {
       })[0]?.name;
     },
     process(v) {
-      return store.processList.filter((item) => {
-        return item.code == v;
-      })[0]?.name;
+      return ['进行中', '已解决'][v];
     },
     shipment(v) {
       return store.shipmentList.filter((item) => {

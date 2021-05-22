@@ -51,6 +51,13 @@ export default {
       return this.$store.routeList[length - 2];
     },
   },
+  watch: {
+    '$route.meta.title': function (nVal) {
+      if (nVal) {
+        this.title = nVal;
+      }
+    },
+  },
 };
 </script>
 

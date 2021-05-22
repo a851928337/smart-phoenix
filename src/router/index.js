@@ -43,7 +43,7 @@ const routes = [
         },
       },
       {
-        path: '/person/:id',
+        path: '/person',
         name: 'person-detail',
         component: () => import('@/views/person-detail'),
       },
