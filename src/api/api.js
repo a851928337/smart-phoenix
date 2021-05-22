@@ -20,3 +20,7 @@ export function getHouseholdList() {
 export function getHouseholdDetail(id) {
   return api.get(`/ddc/es/grid_visit/get_household_detail?household_id=${id}`);
 }
+
+export function getVisitList(data) {
+  return api.get('/ddc/es/grid_visit/get_visit_list', data);
+}

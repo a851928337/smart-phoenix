@@ -2,13 +2,13 @@
   <div ref="container" class="condition">
     <div class="container">
       <div
-        class="item"
+        :class="['item', { active: item.type == type }]"
         v-for="(item, index) in conditionList"
         :key="index"
         :data-type="item.type"
         @click="onShow"
       >
-        {{  item.label(condition[item.type].label) }}
+        {{ condition[item.type].name || item.label }}
         <i class="iconfont icon-xia" />
       </div>
     </div>
@@ -29,7 +29,7 @@
             :key="index"
             @click="yearIndex = index"
           >
-            {{ item.label }}
+            {{ item.name }}
           </div>
         </div>
         <div class="month-list">
@@ -39,7 +39,7 @@
             :key="index"
             @click="monthIndex = index"
           >
-            {{ item.label }}
+            {{ item.name }}
           </div>
         </div>
       </div>
@@ -88,10 +88,10 @@ export default {
         { label: '进展', type: 'process' },
       ],
       condition: {
-        date: '',
-        no: '',
-        problem: '',
-        process: '',
+        date: {},
+        no: {},
+        problem: {},
+        process: {},
       },
       type: '',
       yearIndex: 0,
@@ -135,13 +135,13 @@ export default {
 
           problemIndex >= 0 &&
             problemIndex !== oldProblemIndex &&
-            (this.condition.problem = this.problemList[problemIndex]);
+            (this.condition.problem = this.$store.problemList[problemIndex]);
 
           processIndex >= 0 &&
-            processIndex !== oldProblemIndex &&
-            (this.condition.process = this.processList[processIndex]);
+            processIndex !== oldProcessIndex &&
+            (this.condition.process = this.$store.processList[processIndex]);
 
-          this.onHide();
+          this._value = this.condition;
         }
       );
     },
@@ -154,22 +154,24 @@ export default {
     },
     setDateCondition(index) {
       const yearObj = this.$store.dateList[this.yearIndex];
-      const year = yearObj.value;
-      const month = yearObj.month[index].value;
-      const date = `${year}-${month}`;
+      const year = yearObj.code;
+      const month = yearObj.month[index].code;
+      const code = year && month ? `${year}-${month}` : '';
+      const name = code ? code : '全部日期';
       this.condition.date = {
-        label: date,
-        value: date,
+        name: name,
+        code: code,
       };
     },
     setIndex(e) {
       const { index } = e.target.dataset;
       this[`${this.type}Index`] = Number(index);
+      this.onHide();
     },
     onShow(e) {
       const { type } = e.target.dataset;
       if (this.type === type && this.show) {
-        this.show = false;
+        this.onHide();
       } else {
         this.type = type;
         this.show = true;
@@ -177,16 +179,32 @@ export default {
     },
     onHide() {
       this.show = false;
+      setTimeout(() => {
+        this.type = '';
+      }, 200);
     },
   },
   computed: {
+    _value: {
+      get() {
+        return '';
+      },
+      set(v) {
+        this.$emit('input', v);
+      },
+    },
     monthList() {
       return this.getList[this.yearIndex].month;
+    },
+    noList() {
+      return this.$store.noList?.filter(
+        (item) => !this.search || item.name == this.search
+      );
     },
     getList() {
       const listMap = {
         date: this.$store.dateList,
-        no: this.$store.noList,
+        no: this.noList,
         problem: this.$store.problemList,
         process: this.$store.processList,
       };
@@ -201,6 +219,11 @@ export default {
       return indexMap[this.type];
     },
   },
+  watch: {
+    search() {
+      this.noIndex = -1;
+    },
+  },
 };
 </script>
 
@@ -211,7 +234,11 @@ export default {
     position: relative;
     z-index: 2;
     display: flex;
-    .item {
+    & > .item {
+      &.active {
+        background-color: #fff;
+        color: @green;
+      }
       * {
         pointer-events: none;
       }

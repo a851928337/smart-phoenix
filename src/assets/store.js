@@ -8,14 +8,21 @@ export const store = new Vue({
     userInfo: {},
     appInfo: {},
     routeList: [],
-    dateList: [],
-    noList: [],
+    dateList: [
+      { name: '全部日期', code: '', month: [{ name: '全部日期', code: '' }] },
+    ],
+    noList: [{ name: '全部总户', code: '' }],
+    problemList: [{ name: '全部问题', code: '' }],
+    processList: [
+      { name: '全部', code: '' },
+      { name: '进行中', code: '0' },
+      { name: '已解决', code: '1' },
+    ],
     householdList: [],
     identityList: [],
     educationList: [],
     positionList: [],
     pointTypeList: [],
-    problemList: [],
     shipmentList: [
       { name: '户主', code: '户主' },
       { name: '配偶', code: '配偶' },
@@ -29,19 +36,16 @@ export const store = new Vue({
       { name: '男', code: '男' },
       { name: '女', code: '女' },
     ],
-    processList: [
-      { name: '全部', code: '' },
-      { name: '进行中', code: 0 },
-      { name: '已解决', code: 1 },
-    ],
   },
   methods: {
     getMonthList(count) {
       const monthList = [];
       for (let i = 0; i < count; i++) {
+        let month = i + 1;
+        month = month < 10 ? '0' + month : month;
         monthList.push({
-          label: `${i + 1}月`,
-          value: i + 1,
+          name: `${i + 1}月`,
+          code: month,
         });
       }
       return monthList;
@@ -54,21 +58,15 @@ export const store = new Vue({
       const _dateList = [];
       for (let i = currentYear; i > currentYear - 20; i--) {
         _dateList.push({
-          label: `${i}年`,
-          value: i,
+          name: `${i}年`,
+          code: i,
           month: i === currentYear ? currentYearMonthList : normalMonthList,
         });
       }
-      this.dateList = _dateList;
-    },
-    initNo() {
-      for (let i = 0; i < 20; i++) {
-        this.noList.push({ label: `10${i}`, value: `10${i}` });
-      }
+      this.dateList.push(..._dateList);
     },
   },
   created() {
     this.initDate();
-    this.initNo();
   },
 });

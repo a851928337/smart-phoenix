@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import { login, getToken, getConfig } from '@/api/api';
+import { login, getToken, getConfig, getHouseholdList } from '@/api/api';
 export default {
   data() {
     return {
@@ -15,6 +15,7 @@ export default {
   async mounted() {
     await this.thirdLogin();
     await this.initToken();
+    await this.initHouseholdInfo();
   },
   methods: {
     async thirdLogin() {
@@ -60,7 +61,21 @@ export default {
       this.$store.educationList = education;
       this.$store.positionList = position;
       this.$store.pointTypeList = pointType;
-      this.$store.problemList = problem;
+      this.$store.problemList.push(...problem);
+    },
+    async initHouseholdInfo() {
+      const res = await getHouseholdList();
+      const { user, list } = res.data.body;
+      this.$store.userInfo = {
+        ...user,
+      };
+      this.$store.householdList = list;
+      list.forEach((item) => {
+        this.$store.noList.push({
+          name: item.household_name,
+          code: item.household_id,
+        });
+      });
     },
     setTokenInterval(expires) {
       this.getTokenStamp = setInterval(() => {

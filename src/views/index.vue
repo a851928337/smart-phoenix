@@ -45,7 +45,6 @@
 </template>
 
 <script>
-import { getHouseholdList } from '@/api/api';
 
 export default {
   name: 'index-page',
@@ -58,33 +57,10 @@ export default {
     };
   },
   methods: {
-    async initHouseholdInfo() {
-      const res = await getHouseholdList();
-      const { user, list } = res.data.body;
-      this.$store.userInfo = {
-        ...user,
-      };
-      console.log(list);
-      this.$store.householdList = list;
-      this.$store.noList = [{ name: '全部总户', code: '' }];
-      list.forEach((item) => {
-        this.$store.noList.push({
-          name: item.household_name,
-          code: item.household_name,
-        });
-      });
-    },
     onNavigatorTo(e) {
       const { id } = e.target;
       if (id !== undefined) {
         this.$route.push({});
-      }
-    },
-  },
-  watch: {
-    '$store.appInfo.app_token': async function (nVal) {
-      if (nVal) {
-        this.initHouseholdInfo();
       }
     },
   },
