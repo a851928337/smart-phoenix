@@ -13,6 +13,7 @@ import {
   Picker,
   RadioGroup,
   Button,
+  Toast,
 } from 'vant';
 
 const CompMap = {
@@ -29,10 +30,14 @@ const CompMap = {
   Picker,
   RadioGroup,
   Button,
+  Toast,
 };
 
 export function use(componentArr) {
+  const obj = {};
   componentArr.forEach((comp) => {
+    obj[comp] = CompMap[comp];
     Vue.use(CompMap[comp]);
   });
+  return obj;
 }

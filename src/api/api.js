@@ -28,3 +28,11 @@ export function getVisitList(data) {
 export function getRecordDetail(id) {
   return api.get(`/ddc/es/grid_visit/get_visit_detail?grid_visit_id=${id}`);
 }
+
+export function addVisitRecord(data) {
+  return api.post('/ddc/es/grid_visit/add_visit', data);
+}
+
+export function updateResident(data) {
+  return api.post('/ddc/es/grid_visit/update_resident', data);
+}

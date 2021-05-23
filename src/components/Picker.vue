@@ -34,6 +34,9 @@ export default {
       index: 0,
     };
   },
+  mounted() {
+    this.onConfirm(null, 0);
+  },
   methods: {
     onConfirm(item, index) {
       this.index = index;

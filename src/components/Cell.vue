@@ -1,5 +1,5 @@
 <template>
-  <div :class="['cell', divierType]">
+  <div :class="['cell', divierType, float]">
     <div
       :class="['content', type, { 'tap-transform': canClick, wrap: wrap }]"
       @click="onClick"
@@ -110,6 +110,9 @@ export default {
     divierType: {
       default: 'block',
     },
+    float: {
+      default: 'left',
+    },
   },
   data() {
     return {
@@ -191,6 +194,14 @@ export default {
       padding: .px2vw(39) [ @vw] 0 .px2vw(30) [ @vw];
     }
   }
+  &.right{
+    .content{
+      justify-content: space-between;
+      *:not(.label):not(textarea):not(.checkbox-group){
+        text-align: right;
+      }
+    }
+  }
 }
 .cell {
   background-color: #fff;
@@ -258,7 +269,9 @@ export default {
         flex-wrap: wrap;
         font-size: .px2vw(30) [ @vw];
         .van-checkbox {
-          width: 33.3%;
+          min-width: 33.3%;
+          padding-right: 20px;
+          box-sizing: border-box;
           margin-right: 0;
           margin-top: .px2vw(20) [ @vw];
           &:nth-child(-n + 3) {

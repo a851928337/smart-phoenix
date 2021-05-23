@@ -98,8 +98,11 @@ export default {
     this.$store.$on('title-right-click', () => {
       this.$router.push({
         name: 'person-edit',
-        params: {
-          id: this.$route.params.id,
+        query: {
+          id: this.detail.resident_id,
+          name: this.detail.resident_name,
+          areacode: this.detail.areacode,
+          areaname: this.detail.areaname,
         },
       });
     });

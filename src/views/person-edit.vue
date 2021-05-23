@@ -4,48 +4,27 @@
       <template #content>
         <div class="content">
           <cell
+            float="right"
+            label="与户主关系"
+            type="picker"
             divier-type="line"
-            label="被访人姓名"
-            placeholder="请输入被访人姓名"
-            v-model="form.name"
+            :list="relationList"
+            v-model="form.relation"
           />
           <cell
+            float="right"
+            label="性别"
+            type="picker"
             divier-type="line"
-            label="手机号码"
-            placeholder="请输入被访人手机号码"
-            v-model="form.phone"
+            :list="genderList"
+            v-model="form.relation"
           />
           <cell
+            float="right"
+            label="身份证号"
             divier-type="line"
-            label="是户主"
-            type="switch"
-            v-model="form.isHead"
-          />
-          <cell
-            divier-type="line"
-            label="是空户"
-            type="switch"
-            v-model="form.isEmpty"
-          />
-          <cell
-            divier-type="line"
-            label="户口在本辖区内"
-            type="switch"
-            v-model="form.isInArea"
-          />
-          <cell
-            divier-type="line"
-            label="户口所在地"
-            :wrap="true"
-            v-model="form.address"
-            placeholder="请输入被访人户口所在地"
-          />
-          <cell
-            divier-type="line"
-            label="户口在本辖区内"
-            type="checkbox"
-            @change="onPointTypeChange"
-            :list="pointTypeList"
+            v-model="form.resident_no"
+            placeholder="请输入身份证号码"
           />
         </div>
       </template>
@@ -54,57 +33,69 @@
       <template #content>
         <div class="content">
           <cell
-            divier-type="line"
-            label="走访时间"
-            type="date"
-            @click="onChooseDate"
-            @change="onDateChange"
-          />
-          <cell
-            divier-type="line"
-            label="有反映问题"
-            type="switch"
-            v-model="form.isProblem"
-          />
-          <cell
-            divier-type="line"
-            label="问题描述"
-            type="textarea"
-            placeholder="请输入问题具体内容"
-          />
-          <cell
-            divier-type="line"
-            label="问题分类"
+            float="right"
+            label="文化程度"
             type="picker"
-            :list="problemList"
+            divier-type="line"
+            :list="educationList"
+            v-model="form.education"
           />
           <cell
+            float="right"
+            label="工作单位"
             divier-type="line"
-            label="整改方式"
+            v-model="form.work_unit"
+            placeholder="请输入工作单位"
+          />
+          <cell
+            float="right"
+            label="职业"
+            type="picker"
+            divier-type="line"
+            v-model="form.profession"
+            :list="professionList"
+          />
+          <cell
+            float="right"
+            label="常住地"
+            divier-type="line"
+            v-model="form.resident_address"
+            placeholder="请输入常住地"
+          />
+          <cell
+            float="right"
+            label="联系电话"
+            divier-type="line"
+            v-model="form.contact_no"
+            placeholder="请输入联系电话"
+          />
+        </div>
+      </template>
+    </submit-card>
+    <submit-card>
+      <template #content>
+        <div class="content">
+          <cell
+            float="right"
+            label="是否党员"
             type="radio"
-            :list="methodList"
-            v-model="form.method"
+            divier-type="line"
+            :list="cpcList"
+            v-model="form.is_cpc"
           />
           <cell
-            divier-type="line"
-            v-if="form.method"
-            label="截止时间"
-            type="date"
-            @click="onChooseDate"
-            @change="onEndDateChange"
+            float="right"
+            label="人群分类"
+            type="checkbox"
+            :list="peopleClassList"
+            @change="onPeopleClassChange"
           />
           <cell
-            divier-type="line"
-            label="整改措施"
+            float="right"
+            label="备注"
             type="textarea"
-            placeholder="请输入整改措施"
-          />
-          <cell
-            divier-type="line"
-            label="问题进度"
-            type="radio"
-            :list="processList"
-            v-model="form.process"
+            v-model="form.remark"
+            placeholder="请输入其他内容"
           />
         </div>
       </template>
@@ -115,61 +106,131 @@
 <script>
 import Cell from '@/components/Cell';
 import SubmitCard from '@/components/SubmitCard';
+import { updateResident } from '@/api/api';
 import { use } from '@/assets/js/import-vant';
-use(['Button']);
+const { Toast } = use(['Button', 'Toast']);
 export default {
   name: 'person-edit-page',
   components: { Cell, SubmitCard },
-  mounted() {
-    this.$store.$emit('changetitle', '王璐');
-  },
   data() {
     return {
-      showCollapse: false,
       form: {
-        name: '',
-        phone: '',
-        isHead: false,
-        isEmpty: true,
-        isInArea: true,
-        address: '',
-        pointType: [],
-        date: '',
-        isProblem: true,
-        method: 0,
-        endDate: '',
-        process: 0,
+        resident_id: '', // 居民id
+        resident_name: '', // 居民名字
+        areacode: '', // // 区域代码
+        areaname: '', // 区域
+        contact_no: '', // 联系方式
+        education: 0, // 文化程度
+        work_unit: '', // 工作单位
+        profession: 0, // 职业
+        resident_address: '', // 常住地址
+        is_cpc: '是', // 是否党员
+        people_class: '', // 人群分类
+        remark: '', // 备注
+        relation: 0, // 关系
+        resident_sex: 0, // 性别
+        resident_no: '', // 身份证号
       },
-      pointTypeList: this.$store.pointTypeList,
-      problemList: this.$store.problemList,
-      methodList: [
-        { name: '现场解决', code: '现场解决' },
-        { name: '非现场解决', code: '非现场解决' },
-      ],
-      processList: [
-        { name: '已解决', code: '已解决' },
-        { name: '进行中', code: '进行中' },
+      cpcList: [
+        { name: '是', code: '是' },
+        { name: '否', code: '否' },
       ],
     };
   },
+  mounted() {
+    this.$store.$off('title-right-click');
+    this.$store.$on('title-right-click', () => {
+      this.onSubmit();
+    });
+    const { id, name, areacode, areaname } = this.$route.query;
+    this.$store.$emit('changetitle', name);
+    this.form.resident_id = id;
+    this.form.resident_name = name;
+    this.form.areacode = areacode;
+    this.form.areaname = areaname;
+  },
+  destroyed() {
+    this.$store.$off('title-right-click');
+  },
   methods: {
-    triggerCollapse() {
-      this.showCollapse = !this.showCollapse;
+    validate() {
+      let res = true;
+      const { form } = this;
+      const whiteList = ['remark'];
+      for (let key in form) {
+        const val = form[key];
+        if (
+          !whiteList.includes(key) &&
+          (val === '' ||
+            val == null ||
+            val == undefined ||
+            val?.length == 0 ||
+            val == {})
+        ) {
+          res = false;
+          break;
+        }
+      }
+      return res;
     },
-    onPointTypeChange(v) {
-      this.form.pointType = v;
+    onPeopleClassChange(v) {
+      this.form.people_class = v;
     },
-    onChooseDate() {
-      console.log('选择日期');
+    async onSubmit() {
+      if (this.validate()) {
+        this.$toast.loading('正在提交...');
+        const formatMap = {
+          education: (v) => {
+            return this.educationList[v].code;
+          },
+          people_class: (a) => {
+            return this.peopleClassList
+              .filter((item, index) => {
+                return a.includes(index);
+              })
+              .map((item) => {
+                return item.name;
+              })
+              .join('、');
+          },
+          profession: (v) => {
+            return this.professionList[v].code;
+          },
+          relation: (v) => {
+            return this.relationList[v].code;
+          },
+          resident_sex: (v) => {
+            return this.genderList[v].code;
+          },
+        };
+        const form = { ...this.form };
+        for (let key in form) {
+          const format = formatMap[key];
+          const val = form[key];
+          form[key] = format ? format(val) : val;
+        }
+        const res = await updateResident(form);
+        this.$toast.success('提交成功');
+      } else {
+        Toast.fail('请填写完整的人员信息');
+      }
     },
-    onDateChange(v) {
-      this.form.date = v;
+  },
+  computed: {
+    relationList() {
+      return this.$store.shipmentList;
     },
-    onMethodChange(v) {
-      this.form.method = v;
+    genderList() {
+      return this.$store.genderList;
     },
-    onEndDateChange(v) {
-      this.form.endDate = v;
+    educationList() {
+      return this.$store.educationList;
+    },
+    professionList() {
+      return this.$store.positionList;
+    },
+    peopleClassList() {
+      return this.$store.identityList;
     },
   },
 };

@@ -60,7 +60,7 @@ export default {
 .person-card {
   padding-left: .px2vw(40) [ @vw];
   border: 1px solid @green;
-  border-radius: 0 0 20px 20px;
+  border-radius: 0 0 10px 10px;
   background-color: #ebfef6;
   &:not(:last-child) {
     margin-bottom: .px2vw(21) [ @vw];

@@ -7,6 +7,10 @@
             v-if="$route.name === 'person-detail'"
             class="iconfont icon-bianji_huaban"
           ></div>
+          <div
+            v-if="$route.name === 'person-edit'"
+            class="save"
+          >保存</div>
         </div>
       </template>
     </p-header>

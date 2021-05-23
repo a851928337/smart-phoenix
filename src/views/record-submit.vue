@@ -89,14 +89,19 @@
             :list="methodList"
             v-model="form.solve_method"
           />
-          <cell
+          <!-- <cell
             v-if="form.solve_method === '非现场解决'"
             label="截止时间"
             type="date"
             @click="onChooseDate"
             @change="onEndDateChange"
+          /> -->
+          <cell
+            label="整改措施"
+            type="textarea"
+            placeholder="请输入整改措施"
+            v-model="form.solve_desc"
           />
-          <cell label="整改措施" type="textarea" placeholder="请输入整改措施" />
           <cell
             divier-type="full-line"
             label="问题进度"
@@ -106,7 +111,13 @@
           />
         </div>
         <div class="submit-btn">
-          <van-button color="#2A987A" block round type="info"
+          <van-button
+            color="#2A987A"
+            block
+            round
+            type="info"
+            :disabled="!validate()"
+            @click="onSubmit"
             >提交信息</van-button
           >
         </div>
@@ -139,9 +150,9 @@ import SubmitCard from '@/components/SubmitCard';
 import RecordCard from '@/components/RecordCard';
 import PersonCard from '@/components/PersonCard';
 import { use } from '@/assets/js/import-vant';
-use(['Button']);
+use(['Button', 'Toast']);
 
-import { getHouseholdDetail } from '@/api/api';
+import { getHouseholdDetail, addVisitRecord } from '@/api/api';
 export default {
   name: 'record-submit-page',
   components: { Cell, SubmitCard, RecordCard, PersonCard },
@@ -164,7 +175,7 @@ export default {
         problem_type: '', // 问题分类
         solve_method: '现场解决', // 解决方法
         solve_desc: '', // 整改措施
-        endDate: '',
+        // endDate: '',
         problem_process: 0, // 问题进度
       },
       peopleList: [],
@@ -190,7 +201,28 @@ export default {
       const { household, last_grid_visit, list } = body;
       this.peopleList = list;
       this.householdInfo = household;
+      this.form.household_id = household.household_id;
       this.record = last_grid_visit[0];
+    },
+    validate() {
+      let res = true;
+      const { form } = this;
+      const whiteList = ['solve_desc', 'problem_desc'];
+      for (let key in form) {
+        const val = form[key];
+        if (
+          !whiteList.includes(key) &&
+          (val === '' ||
+            val == null ||
+            val == undefined ||
+            val?.length == 0 ||
+            val == {})
+        ) {
+          res = false;
+          break;
+        }
+      }
+      return res;
     },
     triggerCollapse() {
       this.showCollapse = !this.showCollapse;
@@ -213,13 +245,42 @@ export default {
     onProblemTypeChange(v) {
       this.form.problem_type = v;
     },
+    async onSubmit() {
+      this.$toast.loading('正在提交...');
+      const form = { ...this.form };
+      for (let key in form) {
+        const val = form[key];
+        if (typeof val == 'boolean') {
+          if (val) {
+            form[key] = '是';
+          } else {
+            form[key] = '否';
+          }
+        }
+      }
+      form.problem_process = this.processList[form.problem_process].code;
+      form.problem_type = this.problemList[form.problem_process].code;
+      form.visit_class = this.pointTypeList
+        .filter((item, index) => {
+          return form.visit_class.includes(index);
+        })
+        .map((item) => {
+          return item.name;
+        })
+        .join('、');
+      const res = await addVisitRecord(form);
+      this.$toast.success('提交成功');
+      this.init();
+    },
   },
   computed: {
     pointTypeList() {
       return this.$store.pointTypeList;
     },
     problemList() {
-      return this.$store.problemList;
+      const list = JSON.parse(JSON.stringify(this.$store.problemList));
+      list.splice(0, 1);
+      return list;
     },
   },
 };
