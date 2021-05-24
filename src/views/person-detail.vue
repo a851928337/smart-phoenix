@@ -40,13 +40,14 @@
 </template>
 
 <script>
+import { getResidentDetail } from '@/api/api';
 import { mixin } from '@/assets/mixin';
 export default {
   name: 'visit-record-detail-page',
   mixins: [mixin],
   data() {
     return {
-      detail: this.$store.personInfo,
+      detail: {},
       card1List: [
         {
           label: '与户主关系',
@@ -94,8 +95,10 @@ export default {
     };
   },
   mounted() {
+    this.init();
     this.$store.$off('title-right-click');
     this.$store.$on('title-right-click', () => {
+      this.$store.personInfo = this.detail;
       this.$router.push({
         name: 'person-edit',
         query: {
@@ -110,6 +113,15 @@ export default {
   },
   destroyed() {
     this.$store.$off('title-right-click');
+  },
+  methods: {
+    async init() {
+      const { id } = this.$route.params;
+      const res = await getResidentDetail(id);
+      const { body } = res.data;
+      this.detail = body;
+      console.log(res);
+    },
   },
 };
 </script>

@@ -17,7 +17,7 @@
             type="picker"
             divier-type="line"
             :list="genderList"
-            v-model="form.relation"
+            v-model="form.resident_sex"
           />
           <cell
             float="right"
@@ -89,6 +89,7 @@
             type="checkbox"
             :list="peopleClassList"
             @change="onPeopleClassChange"
+            :value="form.people_class"
           />
           <cell
             float="right"
@@ -138,6 +139,7 @@ export default {
     };
   },
   mounted() {
+    this.init();
     this.$store.$off('title-right-click');
     this.$store.$on('title-right-click', () => {
       this.onSubmit();
@@ -153,6 +155,48 @@ export default {
     this.$store.$off('title-right-click');
   },
   methods: {
+    init() {
+      const formatMap = {
+        relation: (v) => {
+          return this.relationList.findIndex((item) => {
+            return item.code === v;
+          });
+        },
+        resident_sex: (v) => {
+          return this.genderList.findIndex((item) => {
+            return item.code === v;
+          });
+        },
+        education: (v) => {
+          return this.educationList.findIndex((item) => {
+            return item.code === v;
+          });
+        },
+        profession: (v) => {
+          return this.professionList.findIndex((item) => {
+            return item.code === v;
+          });
+        },
+        people_class: (v) => {
+          const arr = v.split('、');
+          return this.peopleClassList
+            .filter((item) => {
+              return arr.includes(item.code);
+            })
+            .map((item, index) => {
+              return index;
+            });
+        },
+      };
+      for (let key in this.form) {
+        const f = formatMap[key];
+        const v = this.$store.personInfo[key];
+        this.form[key] = f ? f(v) : v;
+      }
+      // Object.keys(this.form).forEach((key) => {
+
+      // });
+    },
     validate() {
       let res = true;
       const { form } = this;
@@ -211,6 +255,7 @@ export default {
         }
         const res = await updateResident(form);
         this.$toast.success('提交成功');
+        this.$router.back();
       } else {
         Toast.fail('请填写完整的人员信息');
       }

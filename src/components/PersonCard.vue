@@ -47,9 +47,11 @@ export default {
   },
   methods: {
     goTo() {
-      this.$store.personInfo = this.item;
       this.$router.push({
         name: 'person-detail',
+        params: {
+          id: this.item.resident_id,
+        },
       });
     },
   },

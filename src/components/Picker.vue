@@ -1,7 +1,7 @@
 <template>
   <div class="picker">
-    <div class="text">
-      {{ columns[index] ? columns[index].name : '' }}
+    <div ref="aaa" class="text">
+      {{ columns[val] ? columns[val].name : '' }}
       <i class="iconfont icon-you" />
     </div>
     <van-action-sheet :round="false" v-model="_value" get-container="body">
@@ -11,6 +11,7 @@
         value-key="name"
         @confirm="onConfirm"
         @cancel="onCancel"
+        ref="bbb"
       />
     </van-action-sheet>
   </div>
@@ -28,6 +29,9 @@ export default {
     value: {
       default: false,
     },
+    val: {
+      default: 0,
+    },
   },
   data() {
     return {
@@ -35,11 +39,13 @@ export default {
     };
   },
   mounted() {
-    this.onConfirm(null, 0);
+    this.initial();
   },
   methods: {
+    initial() {
+      this.onConfirm(null, this.val);
+    },
     onConfirm(item, index) {
-      this.index = index;
       this.$emit('change', index);
       this.hide();
     },

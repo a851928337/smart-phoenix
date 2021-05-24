@@ -65,6 +65,7 @@
         <picker
           v-else-if="type === 'picker'"
           v-model="showPicker"
+          :val="value"
           :columns="list"
           @change="onChange"
         />
@@ -137,6 +138,7 @@ export default {
     },
     onChange(v) {
       this.$emit('change', v);
+      this._value = v;
     },
     handleNormalClick(e) {
       this.$emit('click', e);
@@ -159,6 +161,13 @@ export default {
     },
     _canClick() {
       return this.clickTypeList.includes(this.type);
+    },
+  },
+  watch: {
+    value(nVal) {
+      if (this.type === 'checkbox') {
+        this.checkBoxValues = nVal;
+      }
     },
   },
 };
@@ -194,10 +203,10 @@ export default {
       padding: .px2vw(39) [ @vw] 0 .px2vw(30) [ @vw];
     }
   }
-  &.right{
-    .content{
+  &.right {
+    .content {
       justify-content: space-between;
-      *:not(.label):not(textarea):not(.checkbox-group){
+      *:not(.label):not(textarea):not(.checkbox-group) {
         text-align: right;
       }
     }

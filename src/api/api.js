@@ -36,3 +36,7 @@ export function addVisitRecord(data) {
 export function updateResident(data) {
   return api.post('/ddc/es/grid_visit/update_resident', data);
 }
+
+export function getResidentDetail(id) {
+  return api.get(`/ddc/es/grid_visit/get_resident_detail?resident_id=${id}`);
+}
