@@ -66,6 +66,11 @@ export default {
       },
     },
   },
+  watch: {
+    val(nVal) {
+      console.log(nVal, this.columns);
+    },
+  },
 };
 </script>
 

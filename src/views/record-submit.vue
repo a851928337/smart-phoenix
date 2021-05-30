@@ -79,6 +79,7 @@
           <cell
             label="问题分类"
             type="picker"
+            v-model="form.problem_type"
             :list="problemList"
             @change="onProblemTypeChange"
           />
@@ -89,13 +90,13 @@
             :list="methodList"
             v-model="form.solve_method"
           />
-          <!-- <cell
+          <cell
             v-if="form.solve_method === '非现场解决'"
             label="截止时间"
             type="date"
             @click="onChooseDate"
             @change="onEndDateChange"
-          /> -->
+          />
           <cell
             label="整改措施"
             type="textarea"
@@ -172,10 +173,10 @@ export default {
         visit_time: '', //  走访时间
         is_problem: true, // 是否反映问题
         problem_desc: '', // 问题描述
-        problem_type: '', // 问题分类
+        problem_type: 0, // 问题分类
         solve_method: '现场解决', // 解决方法
         solve_desc: '', // 整改措施
-        // endDate: '',
+        solve_time: '',
         problem_process: 0, // 问题进度
       },
       peopleList: [],
@@ -207,7 +208,7 @@ export default {
     validate() {
       let res = true;
       const { form } = this;
-      const whiteList = ['solve_desc', 'problem_desc'];
+      const whiteList = ['solve_desc', 'problem_desc', 'solve_time'];
       for (let key in form) {
         const val = form[key];
         if (
@@ -221,6 +222,9 @@ export default {
           res = false;
           break;
         }
+      }
+      if (form.solve_method === '非现场解决' && !form.solve_time) {
+        res = false;
       }
       return res;
     },
@@ -240,9 +244,10 @@ export default {
       this.form.method = v;
     },
     onEndDateChange(v) {
-      this.form.endDate = v;
+      this.form.solve_time = v;
     },
     onProblemTypeChange(v) {
+      console.log(v);
       this.form.problem_type = v;
     },
     async onSubmit() {
